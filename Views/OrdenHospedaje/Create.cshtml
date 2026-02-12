@@ -1,0 +1,107 @@
+﻿@model Prueba21.Models.OrdenHospedaje
+
+@{
+    ViewData["Title"] = "Crear Orden de Hospedaje";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h3><i class="fas fa-bed"></i> Crear Orden de Hospedaje</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
+                <div class="row">
+                    <!-- Orden de Reserva -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="OrdenReserva" class="form-label fw-bold"></label>
+                        <select asp-for="OrdenReservaId" class="form-select" asp-items="ViewBag.OrdenReservaId">
+                            <option value="">-- Sin Orden de Reserva --</option>
+                        </select>
+                        <span asp-validation-for="OrdenReservaId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Cliente" class="form-label fw-bold"></label>
+                        <select asp-for="ClienteId" class="form-select" asp-items="ViewBag.ClienteId">
+                            <option value="">Seleccione un Cliente</option>
+                        </select>
+                    </div>
+
+                    <!-- Habitación -->
+                    <!-- Habitación (Selección única) -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="HabitacionId" class="form-label fw-bold"></label>
+                        <select asp-for="HabitacionId" class="form-select" asp-items="ViewBag.HabitacionesDisponibles">
+                            <option value="">Seleccione una habitación</option>
+                        </select>
+                        <span asp-validation-for="HabitacionId" class="text-danger"></span>
+                    </div>
+
+
+
+                    <!-- Forma de Pago -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FormaDePago" class="form-label fw-bold"></label>
+                        <select asp-for="FormaDePagoId" class="form-select" asp-items="ViewBag.FormaDePagoId">
+                            <option value="">Seleccione una forma de pago</option>
+                        </select>
+                    </div>
+
+                    <!-- Fecha Check-In -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaCheckIn" class="form-label fw-bold"></label>
+                        <input asp-for="FechaCheckIn" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="FechaCheckIn" class="text-danger"></span>
+                    </div>
+
+                    <!-- Fecha Check-Out -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaCheckOut" class="form-label fw-bold"></label>
+                        <input asp-for="FechaCheckOut" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="FechaCheckOut" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary px-4">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkInInput = document.getElementById("FechaCheckIn");
+        const checkOutInput = document.getElementById("FechaCheckOut");
+        const form = document.querySelector("form");
+
+        form.addEventListener("submit", function (event) {
+            const checkInDate = new Date(checkInInput.value);
+            const checkOutDate = new Date(checkOutInput.value);
+            const errorSpan = document.querySelector("[data-valmsg-for='FechaCheckOut']");
+
+            if (checkOutDate <= checkInDate) {
+                event.preventDefault();
+                errorSpan.textContent = "❌ La fecha de Check-Out debe ser mayor a la fecha de Check-In.";
+                errorSpan.classList.add("text-danger");
+            } else {
+                errorSpan.textContent = "";
+            }
+        });
+    });
+</script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

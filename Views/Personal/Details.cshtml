@@ -1,0 +1,31 @@
+﻿@model Prueba21.Models.Personal
+
+@{
+    ViewData["Title"] = "Detalles del Personal";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-user"></i> Detalles del Personal</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Nombre:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Nombre)</dd>
+            </dl
+            <dl class="row">
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a la lista
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model?.PersonalId" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+        </div>
+    </div>
+</div>

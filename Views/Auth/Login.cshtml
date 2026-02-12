@@ -1,0 +1,725 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Hostal Mercedes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.2.0/css/flag-icons.min.css">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #007bff, #6610f2);
+            --dark-gradient: linear-gradient(135deg, #343a40, #212529);
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--primary-gradient);
+            transition: background 0.3s ease-in-out;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            background: var(--bs-body-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+            .login-container h2 {
+                color: var(--bs-body-color);
+                margin-bottom: 1rem;
+                font-weight: bold;
+            }
+
+        .form-control {
+            border-radius: 10px;
+            padding-left: 2.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            width: 100%;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: var(--primary-gradient);
+            border: none;
+        }
+
+        .login-container .icon {
+            font-size: 3rem;
+            color: #007bff;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        .input-group-text {
+            background: #007bff;
+            color: white;
+            border-radius: 10px 0 0 10px;
+            min-width: 45px;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        [data-bs-theme="dark"] body {
+            background: var(--dark-gradient);
+        }
+
+        [data-bs-theme="dark"] .login-container {
+            background: #343a40;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        }
+
+            [data-bs-theme="dark"] .login-container h2 {
+                color: white;
+            }
+
+        [data-bs-theme="dark"] .brand {
+            color: #f8f9fa;
+        }
+
+        [data-bs-theme="dark"] .input-group-text {
+            background: #6c757d;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            border: none;
+            background: transparent;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--bs-body-color);
+            z-index: 1050;
+            transition: transform 0.3s;
+        }
+
+            .theme-toggle:hover {
+                transform: scale(1.1);
+            }
+
+        /* Estilos para el modal de privacidad */
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+            .modal-body h4 {
+                margin-top: 20px;
+                color: #007bff;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 5px;
+                font-weight: 600;
+            }
+
+            .modal-body ul {
+                padding-left: 20px;
+            }
+
+            .modal-body li {
+                margin-bottom: 8px;
+                line-height: 1.5;
+            }
+
+        [data-bs-theme="dark"] .modal-header {
+            background: var(--dark-gradient);
+        }
+
+        [data-bs-theme="dark"] .modal-content {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+
+        [data-bs-theme="dark"] .modal-body h4 {
+            color: #6ea8fe;
+        }
+        <!-- Añade estos estilos -->
+
+        .attempts-counter {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            animation: pulse 2s infinite;
+        }
+    
+        @@keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+        }
+    
+        [data-bs-theme="dark"] .attempts-counter {
+            background-color: #332701;
+            color: #ffeeba;
+        }
+
+
+        /* Nuevos estilos para las funcionalidades añadidas */
+        .language-selector {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1050;
+            width: 130px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .privacy-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+            .privacy-link a {
+                color: #007bff;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+                .privacy-link a:hover {
+                    text-decoration: underline;
+                    color: #0056b3;
+                }
+
+        .countdown-message {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(220,53,69,0.1);
+            border-radius: 8px;
+        }
+
+        .remember-password {
+            text-align: left;
+            margin: 15px 0;
+        }
+
+        .form-check-input {
+            margin-top: 0.25rem;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .language-selector select {
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+            .language-selector select:focus {
+                outline: none;
+            }
+
+        /* Animaciones */
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .login-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Selector de idioma -->
+    <div class="language-selector">
+        <select id="languageSelector" class="form-select">
+            <option value="es" selected>Español</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <button id="themeToggle" class="theme-toggle">
+        <i id="themeIcon" class="fas fa-moon"></i>
+    </button>
+
+    <!-- Contenedor de Login -->
+    <div class="login-container">
+        <i class="fas fa-hotel icon"></i>
+        <div class="brand" id="brandText">Hostal Mercedes</div>
+        <h2 id="loginTitle">Iniciar Sesión</h2>
+
+        <!-- Mensajes de error -->
+        <div id="errorContainer">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger" id="errorMessage">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+        </div>
+        <div class="countdown-message" id="countdownMessage" style="display:none;"></div>
+        <!-- CONTADOR DE INTENTOS - NUEVA SECCIÓN -->
+        <div class="attempts-counter" id="attemptsCounter" style="display: none;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span id="attemptsText"></span>
+        </div>
+        <form asp-action="Login" method="post" id="loginForm">
+            <div class="mb-3 input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" name="email" class="form-control" required
+                       id="emailInput" placeholder="Correo Electrónico" />
+            </div>
+
+
+            <!-- Campo de contraseña con botón para mostrar/ocultar -->
+            <div class="mb-3 input-group password-input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" name="contrasenia" class="form-control" required
+                       id="passwordInput" placeholder="Contraseña" />
+                <button type="button" class="password-toggle" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div class="remember-password">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberPassword">
+                    <label class="form-check-label" for="rememberPassword" id="rememberLabel">
+                        Recordar contraseña
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="loginButton">Ingresar</button>
+        </form>
+
+        <div class="privacy-link">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal" id="privacyLink">
+                Declaratoria de privacidad
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal de Política de Privacidad -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalTitle">Declaratoria de Privacidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="privacyContentEs">
+                        <h4>Recopilación de información</h4>
+                        <p>En Hostal Mercedes, recopilamos información cuando te registras en nuestro sitio, inicias sesión o realizas una reserva. Esta información puede incluir tu nombre, dirección de correo electrónico, número de teléfono y detalles de pago.</p>
+
+                        <h4>Uso de la información</h4>
+                        <p>La información que recopilamos se puede utilizar para:</p>
+                        <ul>
+                            <li>Personalizar tu experiencia y responder a tus necesidades individuales</li>
+                            <li>Mejorar nuestro sitio web y servicios</li>
+                            <li>Procesar transacciones y reservas</li>
+                            <li>Enviar correos electrónicos periódicos sobre promociones y actualizaciones</li>
+                        </ul>
+
+                        <h4>Protección de la información</h4>
+                        <p>Implementamos diversas medidas de seguridad para proteger tu información personal. Utilizamos encriptación avanzada para proteger datos sensibles transmitidos en línea. También protegemos tu información fuera de línea, con acceso restringido a empleados que necesitan la información para realizar un trabajo específico.</p>
+
+                        <h4>Cookies</h4>
+                        <p>Utilizamos cookies para comprender y guardar tus preferencias para visitas futuras, y compilar datos agregados sobre el tráfico del sitio y la interacción del sitio para ofrecer mejores experiencias y herramientas en el futuro.</p>
+
+                        <h4>Divulgación a terceros</h4>
+                        <p>No vendemos, comercializamos ni transferimos de otro modo a terceros tu información personal identificable. Esto no incluye a terceros de confianza que nos ayudan a operar nuestro sitio web o llevar a cabo nuestro negocio, siempre que esas partes acuerden mantener esta información confidencial.</p>
+
+                        <h4>Consentimiento</h4>
+                        <p>Al utilizar nuestro sitio, usted acepta nuestra política de privacidad.</p>
+
+                        <h4>Cambios a esta política</h4>
+                        <p>Nos reservamos el derecho de modificar esta política de privacidad en cualquier momento. Si decidimos cambiar nuestra política de privacidad, publicaremos esos cambios en esta página.</p>
+
+                        <p><strong>Fecha de última actualización:</strong> 31 de mayo de 2025</p>
+                    </div>
+
+                    <div id="privacyContentEn" style="display:none;">
+                        <h4>Information Collection</h4>
+                        <p>At Hostal Mercedes, we collect information when you register on our site, log in, or make a reservation. This information may include your name, email address, phone number, and payment details.</p>
+
+                        <h4>Use of Information</h4>
+                        <p>The information we collect may be used for:</p>
+                        <ul>
+                            <li>Personalizing your experience and responding to your individual needs</li>
+                            <li>Improving our website and services</li>
+                            <li>Processing transactions and reservations</li>
+                            <li>Sending periodic emails about promotions and updates</li>
+                        </ul>
+
+                        <h4>Information Protection</h4>
+                        <p>We implement various security measures to protect your personal information. We use advanced encryption to protect sensitive data transmitted online. We also protect your information offline by restricting access to employees who need the information to perform a specific job.</p>
+
+                        <h4>Cookies</h4>
+                        <p>We use cookies to understand and save your preferences for future visits and to compile aggregate data about site traffic and interaction to offer better experiences and tools in the future.</p>
+
+                        <h4>Disclosure to Third Parties</h4>
+                        <p>We do not sell, trade, or otherwise transfer your personally identifiable information to third parties. This does not include trusted third parties who assist us in operating our website or conducting our business, as long as those parties agree to keep this information confidential.</p>
+
+                        <h4>Consent</h4>
+                        <p>By using our site, you consent to our privacy policy.</p>
+
+                        <h4>Changes to this Policy</h4>
+                        <p>We reserve the right to modify this privacy policy at any time. If we decide to change our privacy policy, we will post those changes on this page.</p>
+
+                        <p><strong>Last Updated:</strong> May 31, 2025</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="acceptButton">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Bootstrap -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Objeto con todas las traducciones
+        const translations = {
+            es: {
+                brand: "Hostal Mercedes",
+                loginTitle: "Iniciar Sesión",
+                emailPlaceholder: "Correo Electrónico",
+                passwordPlaceholder: "Contraseña",
+                rememberLabel: "Recordar contraseña",
+                loginButton: "Ingresar",
+                privacyLink: "Declaratoria de privacidad",
+                acceptButton: "Aceptar",
+                blockedMessage: "Cuenta bloqueada. Espere {seconds} segundos...",
+                tooManyAttempts: "Demasiados intentos fallidos. Cuenta bloqueada por 30 segundos.",
+                waitMessage: "Demasiados intentos. Espere {seconds} segundos antes de reintentar.",
+                userNotFound: "Usuario no encontrado",
+                wrongPassword: "Contraseña incorrecta",
+                lastAttempt: "¡Último intento! La próxima vez tu cuenta será bloqueada temporalmente.",
+                attemptsRemaining: "Tienes {attempts} intento(s) restantes antes de bloqueo.",
+                attemptsRemainingSingular: "Tienes 1 intento restante antes de bloqueo."
+            },
+            en: {
+                brand: "Mercedes Hostel",
+                loginTitle: "Login",
+                emailPlaceholder: "Email Address",
+                passwordPlaceholder: "Password",
+                rememberLabel: "Remember password",
+                loginButton: "Sign In",
+                privacyLink: "Privacy Statement",
+                acceptButton: "Accept",
+                blockedMessage: "Account blocked. Please wait {seconds} seconds...",
+                tooManyAttempts: "Too many failed attempts. Account blocked for 30 seconds.",
+                waitMessage: "Too many attempts. Please wait {seconds} seconds before trying again.",
+                userNotFound: "User not found",
+                wrongPassword: "Wrong password",
+                lastAttempt: "Last attempt! Next time your account will be temporarily blocked.",
+                attemptsRemaining: "You have {attempts} attempts remaining before lockout.",
+                attemptsRemainingSingular: "You have 1 attempt remaining before lockout."
+            }
+        };
+
+        // Función para cambiar el idioma
+        function changeLanguage(lang) {
+            // Guardar el idioma en localStorage
+            localStorage.setItem('language', lang);
+
+            // Aplicar traducciones a los elementos
+            document.getElementById('brandText').textContent = translations[lang].brand;
+            document.getElementById('loginTitle').textContent = translations[lang].loginTitle;
+            document.getElementById('emailInput').placeholder = translations[lang].emailPlaceholder;
+            document.getElementById('passwordInput').placeholder = translations[lang].passwordPlaceholder;
+            document.getElementById('rememberLabel').textContent = translations[lang].rememberLabel;
+            document.getElementById('loginButton').textContent = translations[lang].loginButton;
+            document.getElementById('privacyLink').textContent = translations[lang].privacyLink;
+            document.getElementById('acceptButton').textContent = translations[lang].acceptButton;
+            document.getElementById('privacyModalTitle').textContent = translations[lang].privacyLink;
+
+            // Cambiar contenido del modal de privacidad
+            if (lang === 'es') {
+                document.getElementById('privacyContentEs').style.display = 'block';
+                document.getElementById('privacyContentEn').style.display = 'none';
+            } else {
+                document.getElementById('privacyContentEs').style.display = 'none';
+                document.getElementById('privacyContentEn').style.display = 'block';
+            }
+
+            // Actualizar mensajes de error si existen
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                const originalText = errorMessage.textContent;
+                if (originalText.includes("bloqueada")) {
+                    errorMessage.textContent = translations[lang].tooManyAttempts;
+                } else if (originalText.includes("Espere")) {
+                    const seconds = originalText.match(/\d+/)[0];
+                    errorMessage.textContent = translations[lang].waitMessage.replace("{seconds}", seconds);
+                } else if (originalText.includes("Usuario no encontrado")) {
+                    errorMessage.textContent = translations[lang].userNotFound;
+                } else if (originalText.includes("Contraseña incorrecta")) {
+                    errorMessage.textContent = translations[lang].wrongPassword;
+                }
+            }
+                // ACTUALIZAR MENSAJE DE INTENTOS (NUEVA SECCIÓN)
+            const attemptsCounter = document.getElementById('attemptsCounter');
+            const attemptsText = document.getElementById('attemptsText');
+            const remainingAttempts = @(TempData["RemainingAttempts"] != null ? TempData["RemainingAttempts"] : -1);
+
+            if (attemptsCounter && attemptsText && attemptsCounter.style.display === 'flex' && remainingAttempts >= 0) {
+                if (remainingAttempts === 0) {
+                    attemptsText.textContent = translations[lang].lastAttempt;
+                } else if (remainingAttempts === 1) {
+                    attemptsText.textContent = translations[lang].attemptsRemainingSingular;
+                } else {
+                    attemptsText.textContent = translations[lang].attemptsRemaining.replace("{attempts}", remainingAttempts);
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Manejo del tema
+            const themeToggle = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const html = document.documentElement;
+
+            if (!themeToggle || !themeIcon) {
+                console.error("No se encontró el botón de cambio de tema.");
+                return;
+            }
+
+            let theme = localStorage.getItem("theme") || "light";
+            html.setAttribute("data-bs-theme", theme);
+            themeIcon.className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
+
+            themeToggle.addEventListener("click", function () {
+                let newTheme = html.getAttribute("data-bs-theme") === "dark" ? "light" : "dark";
+                html.setAttribute("data-bs-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                themeIcon.className = newTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
+            });
+
+
+            // Selector de idioma
+            const languageSelector = document.getElementById('languageSelector');
+            const savedLanguage = localStorage.getItem('language') || 'es';
+
+            // Aplicar idioma guardado
+            changeLanguage(savedLanguage);
+            languageSelector.value = savedLanguage;
+
+            // Evento para cambiar idioma
+            languageSelector.addEventListener('change', function() {
+                const lang = this.value;
+                changeLanguage(lang);
+            });
+
+        // Función para mostrar/ocultar contraseña - SOLUCIÓN CORREGIDA
+                   document.getElementById('togglePassword').addEventListener('click', function() {
+                       const passwordInput = document.getElementById('passwordInput');
+                       const icon = this.querySelector('i');
+
+                       if (passwordInput.type === 'password') {
+                           // Mostrar contraseña
+                           passwordInput.type = 'text';
+                           icon.classList.replace('fa-eye', 'fa-eye-slash');
+                           this.setAttribute('title', 'Ocultar contraseña');
+                       } else {
+                           // Ocultar contraseña
+                           passwordInput.type = 'password';
+                           icon.classList.replace('fa-eye-slash', 'fa-eye');
+                           this.setAttribute('title', 'Mostrar contraseña');
+                       }
+
+                       // Actualizar tooltip
+                       if (bootstrap.Tooltip.getInstance(this)) {
+                           bootstrap.Tooltip.getInstance(this).dispose();
+                           new bootstrap.Tooltip(this);
+                       }
+                   });
+
+
+            // Elementos del formulario
+            const rememberCheckbox = document.getElementById('rememberPassword');
+            const emailInput = document.getElementById('emailInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginForm = document.getElementById('loginForm');
+
+            // Cargar credenciales guardadas
+            const loadSavedCredentials = () => {
+                const rememberedEmail = localStorage.getItem('rememberedEmail');
+                const rememberedPassword = localStorage.getItem('rememberedPassword');
+
+                if (rememberedEmail) emailInput.value = rememberedEmail;
+                if (rememberedPassword) {
+                    passwordInput.value = rememberedPassword;
+                    rememberCheckbox.checked = true;
+                }
+            };
+
+            // Guardar credenciales
+            const saveCredentials = () => {
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem('rememberedEmail', emailInput.value);
+                    localStorage.setItem('rememberedPassword', passwordInput.value);
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                    localStorage.removeItem('rememberedPassword');
+                }
+            };
+
+            // Inicializar
+            loadSavedCredentials();
+
+            // Event listeners
+            rememberCheckbox.addEventListener('change', saveCredentials);
+            loginForm.addEventListener('submit', saveCredentials);
+                    // INICIO NUEVO CÓDIGO PARA INTENTOS RESTANTES
+            const remainingAttempts = @(TempData["RemainingAttempts"] != null ? TempData["RemainingAttempts"] : -1);
+            const attemptsCounter = document.getElementById('attemptsCounter');
+            const attemptsText = document.getElementById('attemptsText');
+            const currentLang = localStorage.getItem('language') || 'es';
+
+            if (remainingAttempts >= 0) {
+                attemptsCounter.style.display = 'flex';
+
+                if (remainingAttempts === 0) {
+                    attemptsText.textContent = translations[currentLang].lastAttempt;
+                } else if (remainingAttempts === 1) {
+                    attemptsText.textContent = translations[currentLang].attemptsRemainingSingular;
+                } else {
+                    attemptsText.textContent = translations[currentLang].attemptsRemaining.replace("{attempts}", remainingAttempts);
+                }
+            }
+
+                  // Temporizador para bloqueo por intentos fallidos
+        function checkBlockedStatus() {
+            const errorMessage = document.getElementById('errorMessage');
+            const countdownMessage = document.getElementById('countdownMessage');
+            const loginButton = document.getElementById('loginButton');
+            const loginForm = document.getElementById('loginForm');
+            const currentLang = localStorage.getItem('language') || 'es';
+
+            // Obtener estado de bloqueo del servidor
+            const isBlocked = @(TempData["IsBlocked"] != null ? "true" : "false");
+            let seconds = @(TempData["BlockSeconds"] != null ? TempData["BlockSeconds"] : 0);
+
+            // Si ya hay un intervalo activo, limpiarlo
+            if (window.countdownInterval) {
+                clearInterval(window.countdownInterval);
+            }
+
+            // Verificar si hay un bloqueo activo
+            if (isBlocked || (errorMessage && (errorMessage.textContent.includes("bloqueada") ||
+                                              errorMessage.textContent.includes("blocked")))) {
+                // Usar el tiempo del servidor si está disponible
+                if (seconds <= 0) {
+                    // Intentar extraer segundos del mensaje de error
+                    const secondsMatch = errorMessage ? errorMessage.textContent.match(/\d+/) : null;
+                    seconds = secondsMatch ? parseInt(secondsMatch[0]) : 30;
+                }
+
+                countdownMessage.style.display = 'block';
+                loginButton.disabled = true;
+
+                // Deshabilitar todos los campos del formulario
+                const formElements = loginForm.elements;
+                for (let i = 0; i < formElements.length; i++) {
+                    formElements[i].disabled = true;
+                }
+
+                // Actualizar mensaje inicial
+                countdownMessage.textContent =
+                    translations[currentLang].blockedMessage.replace("{seconds}", seconds);
+
+                // Iniciar contador regresivo
+                window.countdownInterval = setInterval(() => {
+                    seconds--;
+
+                    if (seconds <= 0) {
+                        clearInterval(window.countdownInterval);
+                        countdownMessage.style.display = 'none';
+                        loginButton.disabled = false;
+
+                        // Habilitar todos los campos del formulario
+                        for (let i = 0; i < formElements.length; i++) {
+                            formElements[i].disabled = false;
+                        }
+
+                        // Recargar la página para obtener nuevo estado del servidor
+                        location.reload();
+                    } else {
+                        // Actualizar mensaje
+                        countdownMessage.textContent =
+                            translations[currentLang].blockedMessage.replace("{seconds}", seconds);
+                    }
+                }, 1000);
+            }
+        }
+
+            checkBlockedStatus();
+        });
+    </script>
+</body>
+</html>

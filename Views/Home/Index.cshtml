@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Menú Principal";
+    var userName = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name)?.Value;
+}
+
+<div class="container text-center mt-5">
+    <h1 class="display-4 fw-bold text-primary">⚙ Bienvenido @userName</h1>
+    <p class="lead">Sistema de Gestión del Hostal Mercedes</p>
+    <p class="text-muted">📅 Fecha y hora actual: <strong id="reloj"></strong></p>
+
+    <div class="row mt-4 justify-content-center">
+        @if (User.IsInRole("Administrador") || User.IsInRole("Recepcionista"))
+        {
+            <div class="col-md-4 d-flex">
+                <div class="card shadow-lg border-0 h-100 w-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">📅 Órdenes de Reserva</h5>
+                        <p class="card-text flex-grow-1">Administra las reservas de habitaciones.</p>
+                        <a href="@Url.Action("Index", "OrdenReserva")" class="btn btn-primary w-100 mt-auto">Ver Reservas</a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (User.IsInRole("Administrador") || User.IsInRole("Recepcionista"))
+        {
+            <div class="col-md-4 d-flex">
+                <div class="card shadow-lg border-0 h-100 w-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">🏠 Órdenes de Hospedaje</h5>
+                        <p class="card-text flex-grow-1">Registra y gestiona hospedajes en curso.</p>
+                        <a href="@Url.Action("Index", "OrdenHospedaje")" class="btn btn-success w-100 mt-auto">Ver Hospedajes</a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (User.IsInRole("Administrador") || User.IsInRole("Conserje"))
+        {
+            <div class="col-md-4 d-flex">
+                <div class="card shadow-lg border-0 h-100 w-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">🛠 Órdenes de Conserjería</h5>
+                        <p class="card-text flex-grow-1">Gestión del mantenimiento y limpieza.</p>
+                        <a href="@Url.Action("Index", "OrdenConserjeria")" class="btn btn-warning w-100 mt-auto">Ver Conserjería</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+        @if (User.IsInRole("Administrador") || User.IsInRole("Recepcionista"))
+        {
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Cliente")" class="btn btn-dark w-100">👥 Clientes</a>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Habitacion")" class="btn btn-dark w-100">🛏 Habitaciones</a>
+            </div>
+        }
+        @if (User.IsInRole("Administrador"))
+        {
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "FormaDePago")" class="btn btn-dark w-100">💳 Formas de Pago</a>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Personal")" class="btn btn-dark w-100">👨‍💼 Personal</a>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function actualizarHora() {
+        let ahora = new Date();
+        let formatoFecha = ahora.toLocaleDateString('es-ES');
+        let formatoHora = ahora.toLocaleTimeString('es-ES');
+        document.getElementById("reloj").innerText = `${formatoFecha} ${formatoHora}`;
+    }
+
+    actualizarHora();
+    setInterval(actualizarHora, 1000);
+</script>

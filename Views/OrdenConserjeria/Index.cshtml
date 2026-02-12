@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Prueba21.Models.OrdenConserjeria>
+
+@{
+    ViewData["Title"] = "Órdenes de Conserjería";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-primary">
+        <i class="fas fa-tools"></i> Órdenes de Conserjería
+    </h1>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="fas fa-plus"></i> Crear Nueva
+    </a>
+</div>
+
+<table class="table table-striped table-hover table-bordered text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Descripción</th>
+            <th>Habitación</th>
+            <th>Personal</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FechaInicio</td>
+                <td>@item.FechaFin</td>
+                <td>@item.Descripcion</td>
+                <td>@item.Habitacion.Numero</td>
+                <td>@item.Personal.Nombre</td>
+                <td>
+                    @if (item.Estado == "Finalizado")
+                    {
+                        <span class="badge bg-success">Finalizado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">En Proceso</span>
+                    }
+                </td>
+                <td class="text-center">
+                    @if (item.Estado != "Finalizado")
+                    {
+                        <form asp-action="FinalizarOrdenConserjeria" asp-route-id="@item.OrdenConserjeriaId"
+                        method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="fas fa-check"></i> Finalizar
+                            </button>
+                        </form>
+                    }
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Recepcionista"))
+                    {
+                        <a asp-action="Details" asp-route-id="@item.OrdenConserjeriaId" class="btn btn-sm btn-info">
+                            <i class="fas fa-eye"></i> Detalles
+                        </a>
+                    }
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.OrdenConserjeriaId" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    }
+                    
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,71 @@
+﻿@model Prueba21.Models.OrdenReserva
+
+@{
+    ViewData["Title"] = "Eliminar Orden de Reserva";
+}
+
+<div class="container mt-4">
+    <div class="card border-danger shadow-lg">
+        <div class="card-header bg-danger text-white">
+            <h4><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-danger fw-bold">
+                ¿Estás seguro de que deseas eliminar esta orden de reserva? Esta acción no se puede deshacer.
+            </p>
+            <dl class="row">
+                <dt class="col-sm-3 fw-bold">Fecha de Entrada:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaEntrada)</dd>
+
+                <dt class="col-sm-3 fw-bold">Fecha de Salida:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaSalida)</dd>
+
+                <dt class="col-sm-3 fw-bold">Cliente:</dt>
+                <dd class="col-sm-9">
+                    <i class="fas fa-envelope text-primary"></i>
+                    @Html.DisplayFor(model => model.Cliente.Email)
+                </dd>
+
+                <dt class="col-sm-3 fw-bold">Habitación:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Habitacion.Numero)</dd>
+
+                <dt class="col-sm-3 fw-bold">Forma de Pago:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.FormaDePago.Nombre)</dd>
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a la Lista
+            </a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                <i class="fas fa-trash"></i> Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta orden de reserva? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="OrdenReservaId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Sí, eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

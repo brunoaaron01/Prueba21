@@ -1,0 +1,53 @@
+﻿@model Prueba21.Models.Habitacion
+
+@{
+    ViewData["Title"] = "Detalles de la Habitación";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-bed"></i> Detalles de la Habitación</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Número:</dt>
+                <dd class="col-sm-9">N°- @Html.DisplayFor(model => model.Numero)</dd>
+
+                <dt class="col-sm-3">Tipo:</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Tipo)</dd>
+
+                <dt class="col-sm-3">Precio:</dt>
+                <dd class="col-sm-9">S/ @Html.DisplayFor(model => model.Precio)</dd>
+
+                <dt class="col-sm-3">Estado:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Estado.ToString() == "Disponible")
+                    {
+                        <span class="badge bg-success">Disponible</span>
+                    }
+                    else if (Model.Estado.ToString() == "Ocupada")
+                    {
+                        <span class="badge bg-danger">Ocupada</span>
+                    }
+                    else if (Model.Estado.ToString() == "Reservada")
+                    {
+                        <span class="badge bg-primary">Reservada</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">@Model.Estado</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a la lista
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model?.HabitacionId" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+        </div>
+    </div>
+</div>

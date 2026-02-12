@@ -1,0 +1,83 @@
+﻿@model Prueba21.Models.OrdenReserva
+
+@{
+    ViewData["Title"] = "Crear Orden de Reserva";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-calendar-plus"></i> Nueva Orden de Reserva</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
+                <div class="row">
+                    <!-- Cliente -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ClienteId" class="form-label fw-bold"></label>
+                        <div class="input-group">
+                            <select asp-for="ClienteId" class="form-select" asp-items="ViewBag.ClienteId">
+                                <option value="">Seleccione un Cliente</option>
+                            </select>
+                            <a asp-controller="Cliente" asp-action="Create" asp-route-returnUrl="@Context.Request.Path"
+                               class="btn btn-success">
+                                <i class="fas fa-user-plus"></i>
+                            </a>
+                        </div>
+                        <span asp-validation-for="ClienteId" class="text-danger"></span>
+                    </div>
+                    <!-- Fecha Entrada -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaEntrada" class="form-label fw-bold"></label>
+                        <input asp-for="FechaEntrada" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="FechaEntrada" class="text-danger"></span>
+                    </div>
+                    <!-- Habitación -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="HabitacionId" class="form-label fw-bold"></label>
+                        <select asp-for="HabitacionId" class="form-select" asp-items="ViewBag.HabitacionId">
+                            <option value="">Seleccione una Habitación</option>
+                        </select>
+                        <span asp-validation-for="HabitacionId" class="text-danger"></span>
+                    </div>
+                    <!-- Fecha Salida -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaSalida" class="form-label fw-bold"></label>
+                        <input asp-for="FechaSalida" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="FechaSalida" class="text-danger"></span>
+                    </div>
+
+                    <!-- Forma de Pago -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FormaDePagoId" class="form-label fw-bold"></label>
+                        <select asp-for="FormaDePagoId" class="form-select" asp-items="ViewBag.FormaDePagoId">
+                            <option value="">Seleccione una Forma de Pago</option>
+                        </select>
+                        <span asp-validation-for="FormaDePagoId" class="text-danger"></span>
+                    </div>
+
+
+
+
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary px-4">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

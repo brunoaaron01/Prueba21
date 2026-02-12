@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HostalMercedes</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Prueba21.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+    <button id="themeToggle" class="btn position-fixed top-0 end-0 m-2">
+        <i id="themeIcon" class="fas fa-moon"></i>
+    </button>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-gradient bg-primary shadow">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-hotel me-2"></i> Hostal Mercedes
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    @if (ViewData["Title"]?.ToString() != "Menú Principal")
+                    {
+                        <ul class="navbar-nav ms-auto">
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Recepcionista"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="OrdenReserva" asp-action="Index">
+                                        <i class="fas fa-calendar-check me-1"></i> Órdenes de Reserva
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="OrdenHospedaje" asp-action="Index">
+                                        <i class="fas fa-bed me-1"></i> Órdenes de Hospedaje
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Conserje"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="OrdenConserjeria" asp-action="Index">
+                                        <i class="fas fa-tools me-1"></i> Órdenes de Conserjería
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Recepcionista"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="Cliente" asp-action="Index">
+                                        <i class="fas fa-users me-1"></i> Clientes
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="Habitacion" asp-action="Index">
+                                        <i class="fas fa-door-open me-1"></i> Habitaciones
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="FormaDePago" asp-action="Index">
+                                        <i class="fas fa-credit-card me-1"></i> Formas de Pago
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="Personal" asp-action="Index">
+                                        <i class="fas fa-user-tie me-1"></i> Personal
+                                    </a>
+                                </li>
+                            }
+                            @if (User.Identity?.IsAuthenticated ?? false)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light fw-semibold" asp-controller="Auth" asp-action="Logout">
+                                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+                                    </a>
+                                </li>
+                            }
+
+                        </ul>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!--
+
+    
+    <footer class="border-top footer text-muted mt-4 py-3 bg-light">
+        <div class="container text-center">
+            &copy; 2025 - Prueba21 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
