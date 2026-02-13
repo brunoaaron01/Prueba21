@@ -1,5 +1,5 @@
 -- ==============================
--- 1. Lookups
+-- 1. Tablas Lookup (Catálogos)
 -- ==============================
 
 CREATE TABLE [TipoDocumento] (
@@ -18,9 +18,30 @@ CREATE TABLE [EstadoHabitacion] (
   [nombre] NVARCHAR(50) NOT NULL
 );
 
+CREATE TABLE [EstadoOrdenConserjeria] (
+  [id_estado_orden_conserj] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE [EstadoOrdenHospedaje] (
+  [id_estado_orden_hosp] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE [EstadoPago] (
+  [id_estado_pago] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL
+);
+
 CREATE TABLE [MetodoPago] (
   [id_metodo_pago] INT PRIMARY KEY IDENTITY(1,1),
   [nombre] NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE [Rol] (
+  [id_rol] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL,
+  [descripcion] NVARCHAR(255)
 );
 
 -- ==============================
@@ -46,9 +67,12 @@ CREATE TABLE [Personal] (
   [tipo_documento] INT NOT NULL REFERENCES TipoDocumento(id_tipo_documento),
   [num_documento] NVARCHAR(50) NOT NULL,
   [email] NVARCHAR(255),
-  [password_hash] VARBINARY(MAX) NOT NULL, -- guardar hash seguro
-  [rol] NVARCHAR(50) NOT NULL,
-  CONSTRAINT UQ_Personal_Documento UNIQUE(tipo_documento, num_documento)
+  [password_hash] VARBINARY(MAX) NOT NULL,
+  [id_rol] INT NOT NULL REFERENCES Rol(id_rol),
+  [activo] BIT DEFAULT 1,
+  [fecha_creacion] DATETIME2 DEFAULT SYSUTCDATETIME(),
+  CONSTRAINT UQ_Personal_Documento UNIQUE(tipo_documento, num_documento),
+  CONSTRAINT CK_Personal_Email CHECK (email IS NULL OR email LIKE '%_@_%._%')
 );
 
 -- ==============================
@@ -59,6 +83,7 @@ CREATE TABLE [TipoHabitacion] (
   [id_tipo_habitacion] INT PRIMARY KEY IDENTITY(1,1),
   [nombre] NVARCHAR(100) NOT NULL,
   [descripcion] NVARCHAR(255),
+  [capacidad_personas] INT NOT NULL CHECK(capacidad_personas > 0),
   [tarifa_base] DECIMAL(12,2) NOT NULL CHECK(tarifa_base >= 0)
 );
 
@@ -72,29 +97,13 @@ CREATE TABLE [Habitacion] (
 );
 
 -- ==============================
--- 4. OrdenConserjeria
--- ==============================
-
-CREATE TABLE [OrdenConserjeria] (
-  [id_orden_conserj] INT PRIMARY KEY IDENTITY(1,1),
-  [id_personal] INT NOT NULL REFERENCES Personal(id_personal),
-  [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
-  [fecha_inicio] DATETIME2 NOT NULL,
-  [fecha_fin] DATETIME2 NULL,
-  [precio] DECIMAL(12,2) NOT NULL CHECK(precio >= 0),
-  [estado] NVARCHAR(50) NOT NULL,
-  [descripcion] NVARCHAR(500)
-);
-
--- ==============================
--- 5. Reserva
+-- 4. Reserva
 -- ==============================
 
 CREATE TABLE [Reserva] (
   [id_reserva] INT PRIMARY KEY IDENTITY(1,1),
   [id_huesped] INT NOT NULL REFERENCES Huesped(id_huesped),
   [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
-  [id_orden_conserj] INT NULL REFERENCES OrdenConserjeria(id_orden_conserj),
   [fecha_entrada] DATE NOT NULL,
   [fecha_salida] DATE NOT NULL,
   [num_personas] INT NOT NULL CHECK(num_personas > 0),
@@ -105,17 +114,33 @@ CREATE TABLE [Reserva] (
 );
 
 -- ==============================
+-- 5. OrdenConserjeria
+-- ==============================
+
+CREATE TABLE [OrdenConserjeria] (
+  [id_orden_conserj] INT PRIMARY KEY IDENTITY(1,1),
+  [id_personal] INT NOT NULL REFERENCES Personal(id_personal),
+  [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
+  [id_reserva] INT NULL REFERENCES Reserva(id_reserva),
+  [fecha_inicio] DATETIME2 NOT NULL,
+  [fecha_fin] DATETIME2 NULL,
+  [precio] DECIMAL(12,2) NOT NULL CHECK(precio >= 0),
+  [estado] INT NOT NULL REFERENCES EstadoOrdenConserjeria(id_estado_orden_conserj),
+  [descripcion] NVARCHAR(500),
+  CONSTRAINT CK_OrdenConserj_Fechas CHECK(fecha_fin IS NULL OR fecha_fin >= fecha_inicio)
+);
+
+-- ==============================
 -- 6. OrdenHospedaje
 -- ==============================
 
 CREATE TABLE [OrdenHospedaje] (
   [id_orden_hospedaje] INT PRIMARY KEY IDENTITY(1,1),
   [id_reserva] INT NOT NULL REFERENCES Reserva(id_reserva),
-  [id_cliente] INT NOT NULL REFERENCES Huesped(id_huesped),
-  [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
-  [estado] NVARCHAR(50) NOT NULL,
+  [estado] INT NOT NULL REFERENCES EstadoOrdenHospedaje(id_estado_orden_hosp),
   [fecha_checkin] DATETIME2 NULL,
-  [fecha_checkout] DATETIME2 NULL
+  [fecha_checkout] DATETIME2 NULL,
+  CONSTRAINT CK_OrdenHosp_Fechas CHECK(fecha_checkout IS NULL OR fecha_checkout >= fecha_checkin)
 );
 
 -- ==============================
@@ -128,9 +153,10 @@ CREATE TABLE [Pago] (
   [id_orden_hospedaje] INT NULL REFERENCES OrdenHospedaje(id_orden_hospedaje),
   [id_orden_conserjeria] INT NULL REFERENCES OrdenConserjeria(id_orden_conserj),
   [fecha_pago] DATETIME2 DEFAULT SYSUTCDATETIME(),
-  [monto_pagado] DECIMAL(12,2) CHECK(monto_pagado >= 0),
+  [monto_pagado] DECIMAL(12,2) NOT NULL CHECK(monto_pagado >= 0),
   [metodo] INT NOT NULL REFERENCES MetodoPago(id_metodo_pago),
-  [estado_pago] NVARCHAR(50) NOT NULL,
+  [estado_pago] INT NOT NULL REFERENCES EstadoPago(id_estado_pago),
+  [comprobante] NVARCHAR(100),
   CONSTRAINT CK_Pago_UnSoloTarget CHECK (
       (CASE WHEN id_reserva IS NOT NULL THEN 1 ELSE 0 END +
        CASE WHEN id_orden_hospedaje IS NOT NULL THEN 1 ELSE 0 END +
@@ -144,11 +170,24 @@ CREATE TABLE [Pago] (
 
 CREATE TABLE [Encuesta] (
   [id_encuesta] INT PRIMARY KEY IDENTITY(1,1),
-  [nombres] NVARCHAR(100),
+  [id_huesped] INT NOT NULL REFERENCES Huesped(id_huesped),
   [descripcion] NVARCHAR(500),
-  [recomendacion] INT CHECK(recomendacion BETWEEN 1 AND 10),
+  [recomendacion] INT NOT NULL CHECK(recomendacion BETWEEN 1 AND 10),
   [lugar_origen] NVARCHAR(100),
   [motivo_viaje] NVARCHAR(100),
   [tiempo_estadia] NVARCHAR(50),
-  [id_huesped] INT NULL REFERENCES Huesped(id_huesped)
+  [fecha_encuesta] DATETIME2 DEFAULT SYSUTCDATETIME()
 );
+
+-- ==============================
+-- 9. Índices recomendados para performance
+-- ==============================
+
+CREATE INDEX IX_Reserva_Huesped ON Reserva(id_huesped);
+CREATE INDEX IX_Reserva_Habitacion ON Reserva(id_habitacion);
+CREATE INDEX IX_Reserva_Fechas ON Reserva(fecha_entrada, fecha_salida);
+CREATE INDEX IX_OrdenHospedaje_Reserva ON OrdenHospedaje(id_reserva);
+CREATE INDEX IX_OrdenConserjeria_Habitacion ON OrdenConserjeria(id_habitacion);
+CREATE INDEX IX_OrdenConserjeria_Reserva ON OrdenConserjeria(id_reserva);
+CREATE INDEX IX_Pago_Fecha ON Pago(fecha_pago);
+CREATE INDEX IX_Encuesta_Huesped ON Encuesta(id_huesped);
