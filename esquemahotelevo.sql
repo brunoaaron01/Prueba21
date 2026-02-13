@@ -1,145 +1,154 @@
+-- ==============================
+-- 1. Lookups
+-- ==============================
+
+CREATE TABLE [TipoDocumento] (
+  [id_tipo_documento] INT PRIMARY KEY IDENTITY(1,1),
+  [codigo] NVARCHAR(20) NOT NULL,
+  [descripcion] NVARCHAR(100) NOT NULL
+);
+
+CREATE TABLE [EstadoReserva] (
+  [id_estado_reserva] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE [EstadoHabitacion] (
+  [id_estado_habitacion] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE [MetodoPago] (
+  [id_metodo_pago] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(50) NOT NULL
+);
+
+-- ==============================
+-- 2. Entidades base (Huesped y Personal)
+-- ==============================
 
 CREATE TABLE [Huesped] (
-  [id_huesped] int PRIMARY KEY IDENTITY(1, 1),
-  [nombres] nvarchar(255),
-  [apellidos] nvarchar(255),
-  [tipo_documento] nvarchar(255),
-  [num_documento] nvarchar(255),
-  [telefono] nvarchar(255),
-  [correo] nvarchar(255),
-  [fecha_creacion] datetime
-)
-GO
-
-CREATE TABLE [TipoHabitacion] (
-  [id_tipo_habitacion] int PRIMARY KEY IDENTITY(1, 1),
-  [nombre] nvarchar(255),
-  [descripcion] nvarchar(255),
-  [tarifa_base] decimal
-)
-GO
-
-CREATE TABLE [Habitacion] (
-  [id_habitacion] int PRIMARY KEY IDENTITY(1, 1),
-  [numero] nvarchar(255),
-  [piso] int,
-  [id_tipo_habitacion] int,
-  [estado] nvarchar(255)
-)
-GO
-
-CREATE TABLE [Reserva] (
-  [id_reserva] int PRIMARY KEY IDENTITY(1, 1),
-  [id_huesped] int,
-  [id_habitacion] int,
-  [id_orden_conserj] int,
-  [fecha_entrada] date,
-  [fecha_salida] date,
-  [num_personas] int,
-  [monto_total] decimal,
-  [estado] nvarchar(255),
-  [fecha_creacion] datetime
-)
-GO
-
-CREATE TABLE [Pago] (
-  [id_pago] int PRIMARY KEY IDENTITY(1, 1),
-  [id_reserva] int,
-  [id_orden_hospedaje] int,
-  [id_orden_conserjeria] int,
-  [fecha_pago] datetime,
-  [monto_pagado] decimal,
-  [metodo] int,
-  [estado_pago] nvarchar(255)
-)
-GO
-
-CREATE TABLE [metodo_pago] (
-  [idmetodopago] int PRIMARY KEY IDENTITY(1, 1),
-  [nom_metodopago] nvarchar(255)
-)
-GO
-
-CREATE TABLE [OrdenConserjeria] (
-  [id_orden_conserj] int PRIMARY KEY IDENTITY(1, 1),
-  [id_personal] int,
-  [id_habitacion] int,
-  [fecha_inicio] datetime,
-  [fecha_fin] datetime,
-  [precio] decimal,
-  [estado] nvarchar(255),
-  [descripcion] nvarchar(255)
-)
-GO
+  [id_huesped] INT PRIMARY KEY IDENTITY(1,1),
+  [nombres] NVARCHAR(100) NOT NULL,
+  [apellidos] NVARCHAR(100) NOT NULL,
+  [tipo_documento] INT NOT NULL REFERENCES TipoDocumento(id_tipo_documento),
+  [num_documento] NVARCHAR(50) NOT NULL,
+  [telefono] NVARCHAR(20),
+  [correo] NVARCHAR(255),
+  [fecha_creacion] DATETIME2 DEFAULT SYSUTCDATETIME(),
+  CONSTRAINT UQ_Huesped_Documento UNIQUE(tipo_documento, num_documento),
+  CONSTRAINT CK_Huesped_Correo CHECK (correo IS NULL OR correo LIKE '%_@_%._%')
+);
 
 CREATE TABLE [Personal] (
-  [id_personal] int PRIMARY KEY IDENTITY(1, 1),
-  [nombre] nvarchar(255),
-  [tipo_documento] nvarchar(255),
-  [num_documento] nvarchar(255),
-  [email] nvarchar(255),
-  [contraseña] nvarchar(255),
-  [rol] nvarchar(255)
-)
-GO
+  [id_personal] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(100) NOT NULL,
+  [tipo_documento] INT NOT NULL REFERENCES TipoDocumento(id_tipo_documento),
+  [num_documento] NVARCHAR(50) NOT NULL,
+  [email] NVARCHAR(255),
+  [password_hash] VARBINARY(MAX) NOT NULL, -- guardar hash seguro
+  [rol] NVARCHAR(50) NOT NULL,
+  CONSTRAINT UQ_Personal_Documento UNIQUE(tipo_documento, num_documento)
+);
+
+-- ==============================
+-- 3. Tipos y Habitaciones
+-- ==============================
+
+CREATE TABLE [TipoHabitacion] (
+  [id_tipo_habitacion] INT PRIMARY KEY IDENTITY(1,1),
+  [nombre] NVARCHAR(100) NOT NULL,
+  [descripcion] NVARCHAR(255),
+  [tarifa_base] DECIMAL(12,2) NOT NULL CHECK(tarifa_base >= 0)
+);
+
+CREATE TABLE [Habitacion] (
+  [id_habitacion] INT PRIMARY KEY IDENTITY(1,1),
+  [numero] NVARCHAR(20) NOT NULL,
+  [piso] INT NOT NULL,
+  [id_tipo_habitacion] INT NOT NULL REFERENCES TipoHabitacion(id_tipo_habitacion),
+  [estado] INT NOT NULL REFERENCES EstadoHabitacion(id_estado_habitacion),
+  CONSTRAINT UQ_Habitacion_Numero_Piso UNIQUE(numero, piso)
+);
+
+-- ==============================
+-- 4. OrdenConserjeria
+-- ==============================
+
+CREATE TABLE [OrdenConserjeria] (
+  [id_orden_conserj] INT PRIMARY KEY IDENTITY(1,1),
+  [id_personal] INT NOT NULL REFERENCES Personal(id_personal),
+  [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
+  [fecha_inicio] DATETIME2 NOT NULL,
+  [fecha_fin] DATETIME2 NULL,
+  [precio] DECIMAL(12,2) NOT NULL CHECK(precio >= 0),
+  [estado] NVARCHAR(50) NOT NULL,
+  [descripcion] NVARCHAR(500)
+);
+
+-- ==============================
+-- 5. Reserva
+-- ==============================
+
+CREATE TABLE [Reserva] (
+  [id_reserva] INT PRIMARY KEY IDENTITY(1,1),
+  [id_huesped] INT NOT NULL REFERENCES Huesped(id_huesped),
+  [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
+  [id_orden_conserj] INT NULL REFERENCES OrdenConserjeria(id_orden_conserj),
+  [fecha_entrada] DATE NOT NULL,
+  [fecha_salida] DATE NOT NULL,
+  [num_personas] INT NOT NULL CHECK(num_personas > 0),
+  [monto_total] DECIMAL(12,2) NOT NULL CHECK(monto_total >= 0),
+  [estado] INT NOT NULL REFERENCES EstadoReserva(id_estado_reserva),
+  [fecha_creacion] DATETIME2 DEFAULT SYSUTCDATETIME(),
+  CONSTRAINT CK_Reserva_Fechas CHECK(fecha_salida > fecha_entrada)
+);
+
+-- ==============================
+-- 6. OrdenHospedaje
+-- ==============================
 
 CREATE TABLE [OrdenHospedaje] (
-  [id_orden_hospedaje] int PRIMARY KEY IDENTITY(1, 1),
-  [id_reserva] int,
-  [id_cliente] int,
-  [id_habitacion] int,
-  [estado] nvarchar(255),
-  [fecha_checkin] datetime,
-  [fecha_checkout] datetime
-)
-GO
+  [id_orden_hospedaje] INT PRIMARY KEY IDENTITY(1,1),
+  [id_reserva] INT NOT NULL REFERENCES Reserva(id_reserva),
+  [id_cliente] INT NOT NULL REFERENCES Huesped(id_huesped),
+  [id_habitacion] INT NOT NULL REFERENCES Habitacion(id_habitacion),
+  [estado] NVARCHAR(50) NOT NULL,
+  [fecha_checkin] DATETIME2 NULL,
+  [fecha_checkout] DATETIME2 NULL
+);
+
+-- ==============================
+-- 7. Pago
+-- ==============================
+
+CREATE TABLE [Pago] (
+  [id_pago] INT PRIMARY KEY IDENTITY(1,1),
+  [id_reserva] INT NULL REFERENCES Reserva(id_reserva),
+  [id_orden_hospedaje] INT NULL REFERENCES OrdenHospedaje(id_orden_hospedaje),
+  [id_orden_conserjeria] INT NULL REFERENCES OrdenConserjeria(id_orden_conserj),
+  [fecha_pago] DATETIME2 DEFAULT SYSUTCDATETIME(),
+  [monto_pagado] DECIMAL(12,2) CHECK(monto_pagado >= 0),
+  [metodo] INT NOT NULL REFERENCES MetodoPago(id_metodo_pago),
+  [estado_pago] NVARCHAR(50) NOT NULL,
+  CONSTRAINT CK_Pago_UnSoloTarget CHECK (
+      (CASE WHEN id_reserva IS NOT NULL THEN 1 ELSE 0 END +
+       CASE WHEN id_orden_hospedaje IS NOT NULL THEN 1 ELSE 0 END +
+       CASE WHEN id_orden_conserjeria IS NOT NULL THEN 1 ELSE 0 END) = 1
+  )
+);
+
+-- ==============================
+-- 8. Encuesta
+-- ==============================
 
 CREATE TABLE [Encuesta] (
-  [id_encuesta] int PRIMARY KEY IDENTITY(1, 1),
-  [nombres] nvarchar(255),
-  [descripcion] nvarchar(255),
-  [recomendacion] int,
-  [lugar_origen] nvarchar(255),
-  [motivo_viaje] varchar,
-  [tiempo_estadia] nvarchar(255)
-)
-GO
-
-ALTER TABLE [Habitacion] ADD FOREIGN KEY ([id_tipo_habitacion]) REFERENCES [TipoHabitacion] ([id_tipo_habitacion])
-GO
-
-ALTER TABLE [Reserva] ADD FOREIGN KEY ([id_huesped]) REFERENCES [Huesped] ([id_huesped])
-GO
-
-ALTER TABLE [Reserva] ADD FOREIGN KEY ([id_habitacion]) REFERENCES [Habitacion] ([id_habitacion])
-GO
-
-ALTER TABLE [Reserva] ADD FOREIGN KEY ([id_orden_conserj]) REFERENCES [OrdenConserjeria] ([id_orden_conserj])
-GO
-
-ALTER TABLE [Pago] ADD FOREIGN KEY ([id_reserva]) REFERENCES [Reserva] ([id_reserva])
-GO
-
-ALTER TABLE [Pago] ADD FOREIGN KEY ([id_orden_hospedaje]) REFERENCES [OrdenHospedaje] ([id_orden_hospedaje])
-GO
-
-ALTER TABLE [Pago] ADD FOREIGN KEY ([id_orden_conserjeria]) REFERENCES [OrdenConserjeria] ([id_orden_conserj])
-GO
-
-ALTER TABLE [Pago] ADD FOREIGN KEY ([metodo]) REFERENCES [metodo_pago] ([idmetodopago])
-GO
-
-ALTER TABLE [OrdenConserjeria] ADD FOREIGN KEY ([id_personal]) REFERENCES [Personal] ([id_personal])
-GO
-
-ALTER TABLE [OrdenConserjeria] ADD FOREIGN KEY ([id_habitacion]) REFERENCES [Habitacion] ([id_habitacion])
-GO
-
-ALTER TABLE [OrdenHospedaje] ADD FOREIGN KEY ([id_reserva]) REFERENCES [Reserva] ([id_reserva])
-GO
-
-ALTER TABLE [OrdenHospedaje] ADD FOREIGN KEY ([id_cliente]) REFERENCES [Huesped] ([id_huesped])
-GO
-
-ALTER TABLE [OrdenHospedaje] ADD FOREIGN KEY ([id_habitacion]) REFERENCES [Habitacion] ([id_habitacion])
-GO
+  [id_encuesta] INT PRIMARY KEY IDENTITY(1,1),
+  [nombres] NVARCHAR(100),
+  [descripcion] NVARCHAR(500),
+  [recomendacion] INT CHECK(recomendacion BETWEEN 1 AND 10),
+  [lugar_origen] NVARCHAR(100),
+  [motivo_viaje] NVARCHAR(100),
+  [tiempo_estadia] NVARCHAR(50),
+  [id_huesped] INT NULL REFERENCES Huesped(id_huesped)
+);
