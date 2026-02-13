@@ -1,3 +1,7 @@
+create database proyecto
+
+use proyecto
+
 -- ==============================
 -- 1. Tablas Lookup (Catálogos)
 -- ==============================
@@ -263,149 +267,151 @@ CREATE INDEX IX_Personal_Activo ON Personal(activo);
 CREATE INDEX IX_Habitacion_TipoHabitacion ON Habitacion(id_tipo_habitacion);
 CREATE INDEX IX_Habitacion_Estado ON Habitacion(estado);
 
+ALTER AUTHORIZATION ON DATABASE::proyecto TO sa;
 
--- Procedimiento para registrar un pago y actualizar el documento
-CREATE PROCEDURE sp_RegistrarPago
-    @id_documento INT,
-    @monto_pagado DECIMAL(12,2),
-    @id_metodo_pago INT,
-    @id_personal INT = NULL,
-    @numero_comprobante NVARCHAR(100) = NULL,
-    @numero_operacion NVARCHAR(100) = NULL,
-    @observaciones NVARCHAR(500) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    BEGIN TRANSACTION;
-    
-    BEGIN TRY
-        -- Validar que el documento existe y no está anulado
-        DECLARE @estado_actual INT, @monto_total DECIMAL(12,2), @monto_pagado_actual DECIMAL(12,2);
-        
-        SELECT 
-            @estado_actual = estado_documento,
-            @monto_total = monto_total,
-            @monto_pagado_actual = monto_pagado
-        FROM Documento
-        WHERE id_documento = @id_documento;
-        
-        IF @estado_actual = (SELECT id_estado_documento FROM EstadoDocumento WHERE nombre = 'Anulado')
-        BEGIN
-            RAISERROR('No se puede registrar pago en un documento anulado', 16, 1);
-            RETURN;
-        END
-        
-        -- Validar que no se exceda el monto total
-        IF (@monto_pagado_actual + @monto_pagado) > @monto_total
-        BEGIN
-            RAISERROR('El monto a pagar excede el saldo pendiente', 16, 1);
-            RETURN;
-        END
-        
-        -- Insertar el pago
-        INSERT INTO Pago (
-            id_documento,
-            monto_pagado,
-            metodo,
-            estado_pago,
-            numero_comprobante,
-            numero_operacion,
-            observaciones,
-            id_personal
-        )
-        VALUES (
-            @id_documento,
-            @monto_pagado,
-            @id_metodo_pago,
-            (SELECT id_estado_pago FROM EstadoPago WHERE nombre = 'Completado'),
-            @numero_comprobante,
-            @numero_operacion,
-            @observaciones,
-            @id_personal
-        );
-        
-        -- Actualizar el monto pagado en el documento
-        UPDATE Documento
-        SET monto_pagado = monto_pagado + @monto_pagado,
-            estado_documento = CASE 
-                WHEN (monto_pagado + @monto_pagado) >= monto_total 
-                THEN (SELECT id_estado_documento FROM EstadoDocumento WHERE nombre = 'Pagado Total')
-                ELSE (SELECT id_estado_documento FROM EstadoDocumento WHERE nombre = 'Pagado Parcial')
-            END
-        WHERE id_documento = @id_documento;
-        
-        COMMIT TRANSACTION;
-        
-        SELECT 'Pago registrado exitosamente' AS Mensaje;
-    END TRY
-    BEGIN CATCH
-        ROLLBACK TRANSACTION;
-        THROW;
-    END CATCH
-END;
-GO
 
--- Procedimiento para obtener el estado de cuenta de un huésped
-CREATE PROCEDURE sp_EstadoCuentaHuesped
-    @id_huesped INT
-AS
-BEGIN
-    SET NOCOUNT ON;
+---- Procedimiento para registrar un pago y actualizar el documento
+--CREATE PROCEDURE sp_RegistrarPago
+--    @id_documento INT,
+--    @monto_pagado DECIMAL(12,2),
+--    @id_metodo_pago INT,
+--    @id_personal INT = NULL,
+--    @numero_comprobante NVARCHAR(100) = NULL,
+--    @numero_operacion NVARCHAR(100) = NULL,
+--    @observaciones NVARCHAR(500) = NULL
+--AS
+--BEGIN
+--    SET NOCOUNT ON;
+--    BEGIN TRANSACTION;
     
-    SELECT 
-        d.numero_documento,
-        tdc.nombre AS tipo_concepto,
-        d.fecha_emision,
-        d.monto_total,
-        d.monto_pagado,
-        d.saldo_pendiente,
-        ed.nombre AS estado,
-        CASE 
-            WHEN d.id_reserva IS NOT NULL THEN 'Reserva #' + CAST(d.id_reserva AS NVARCHAR)
-            WHEN d.id_orden_hospedaje IS NOT NULL THEN 'Hospedaje #' + CAST(d.id_orden_hospedaje AS NVARCHAR)
-            WHEN d.id_orden_conserjeria IS NOT NULL THEN 'Conserjería #' + CAST(d.id_orden_conserjeria AS NVARCHAR)
-        END AS origen
-    FROM Documento d
-    INNER JOIN TipoDocumentoCobro tdc ON d.tipo_documento = tdc.id_tipo_doc_cobro
-    INNER JOIN EstadoDocumento ed ON d.estado_documento = ed.id_estado_documento
-    LEFT JOIN Reserva r ON d.id_reserva = r.id_reserva
-    LEFT JOIN OrdenHospedaje oh ON d.id_orden_hospedaje = oh.id_orden_hospedaje
-    LEFT JOIN Reserva r2 ON oh.id_reserva = r2.id_reserva
-    WHERE r.id_huesped = @id_huesped 
-       OR r2.id_huesped = @id_huesped
-    ORDER BY d.fecha_emision DESC;
-END;
-GO
+--    BEGIN TRY
+--        -- Validar que el documento existe y no está anulado
+--        DECLARE @estado_actual INT, @monto_total DECIMAL(12,2), @monto_pagado_actual DECIMAL(12,2);
+        
+--        SELECT 
+--            @estado_actual = estado_documento,
+--            @monto_total = monto_total,
+--            @monto_pagado_actual = monto_pagado
+--        FROM Documento
+--        WHERE id_documento = @id_documento;
+        
+--        IF @estado_actual = (SELECT id_estado_documento FROM EstadoDocumento WHERE nombre = 'Anulado')
+--        BEGIN
+--            RAISERROR('No se puede registrar pago en un documento anulado', 16, 1);
+--            RETURN;
+--        END
+        
+--        -- Validar que no se exceda el monto total
+--        IF (@monto_pagado_actual + @monto_pagado) > @monto_total
+--        BEGIN
+--            RAISERROR('El monto a pagar excede el saldo pendiente', 16, 1);
+--            RETURN;
+--        END
+        
+--        -- Insertar el pago
+--        INSERT INTO Pago (
+--            id_documento,
+--            monto_pagado,
+--            metodo,
+--            estado_pago,
+--            numero_comprobante,
+--            numero_operacion,
+--            observaciones,
+--            id_personal
+--        )
+--        VALUES (
+--            @id_documento,
+--            @monto_pagado,
+--            @id_metodo_pago,
+--            (SELECT id_estado_pago FROM EstadoPago WHERE nombre = 'Completado'),
+--            @numero_comprobante,
+--            @numero_operacion,
+--            @observaciones,
+--            @id_personal
+--        );
+        
+--        -- Actualizar el monto pagado en el documento
+--        UPDATE Documento
+--        SET monto_pagado = monto_pagado + @monto_pagado,
+--            estado_documento = CASE 
+--                WHEN (monto_pagado + @monto_pagado) >= monto_total 
+--                THEN (SELECT id_estado_documento FROM EstadoDocumento WHERE nombre = 'Pagado Total')
+--                ELSE (SELECT id_estado_documento FROM EstadoDocumento WHERE nombre = 'Pagado Parcial')
+--            END
+--        WHERE id_documento = @id_documento;
+        
+--        COMMIT TRANSACTION;
+        
+--        SELECT 'Pago registrado exitosamente' AS Mensaje;
+--    END TRY
+--    BEGIN CATCH
+--        ROLLBACK TRANSACTION;
+--        THROW;
+--    END CATCH
+--END;
+--GO
 
--- Procedimiento para obtener reporte de documentos pendientes
-CREATE PROCEDURE sp_DocumentosPendientes
-AS
-BEGIN
-    SET NOCOUNT ON;
+---- Procedimiento para obtener el estado de cuenta de un huésped
+--CREATE PROCEDURE sp_EstadoCuentaHuesped
+--    @id_huesped INT
+--AS
+--BEGIN
+--    SET NOCOUNT ON;
     
-    SELECT 
-        d.numero_documento,
-        d.fecha_emision,
-        d.fecha_vencimiento,
-        tdc.nombre AS tipo_documento,
-        h.nombres + ' ' + h.apellidos AS huesped,
-        d.monto_total,
-        d.monto_pagado,
-        d.saldo_pendiente,
-        ed.nombre AS estado,
-        DATEDIFF(DAY, GETDATE(), d.fecha_vencimiento) AS dias_vencimiento
-    FROM Documento d
-    INNER JOIN TipoDocumentoCobro tdc ON d.tipo_documento = tdc.id_tipo_doc_cobro
-    INNER JOIN EstadoDocumento ed ON d.estado_documento = ed.id_estado_documento
-    LEFT JOIN Reserva r ON d.id_reserva = r.id_reserva
-    LEFT JOIN OrdenHospedaje oh ON d.id_orden_hospedaje = oh.id_orden_hospedaje
-    LEFT JOIN Reserva r2 ON oh.id_reserva = r2.id_reserva
-    LEFT JOIN Huesped h ON COALESCE(r.id_huesped, r2.id_huesped) = h.id_huesped
-    WHERE d.estado_documento IN (
-        SELECT id_estado_documento 
-        FROM EstadoDocumento 
-        WHERE nombre IN ('Pendiente', 'Pagado Parcial', 'Vencido')
-    )
-    ORDER BY d.fecha_vencimiento ASC;
-END;
-GO
+--    SELECT 
+--        d.numero_documento,
+--        tdc.nombre AS tipo_concepto,
+--        d.fecha_emision,
+--        d.monto_total,
+--        d.monto_pagado,
+--        d.saldo_pendiente,
+--        ed.nombre AS estado,
+--        CASE 
+--            WHEN d.id_reserva IS NOT NULL THEN 'Reserva #' + CAST(d.id_reserva AS NVARCHAR)
+--            WHEN d.id_orden_hospedaje IS NOT NULL THEN 'Hospedaje #' + CAST(d.id_orden_hospedaje AS NVARCHAR)
+--            WHEN d.id_orden_conserjeria IS NOT NULL THEN 'Conserjería #' + CAST(d.id_orden_conserjeria AS NVARCHAR)
+--        END AS origen
+--    FROM Documento d
+--    INNER JOIN TipoDocumentoCobro tdc ON d.tipo_documento = tdc.id_tipo_doc_cobro
+--    INNER JOIN EstadoDocumento ed ON d.estado_documento = ed.id_estado_documento
+--    LEFT JOIN Reserva r ON d.id_reserva = r.id_reserva
+--    LEFT JOIN OrdenHospedaje oh ON d.id_orden_hospedaje = oh.id_orden_hospedaje
+--    LEFT JOIN Reserva r2 ON oh.id_reserva = r2.id_reserva
+--    WHERE r.id_huesped = @id_huesped 
+--       OR r2.id_huesped = @id_huesped
+--    ORDER BY d.fecha_emision DESC;
+--END;
+--GO
+
+---- Procedimiento para obtener reporte de documentos pendientes
+--CREATE PROCEDURE sp_DocumentosPendientes
+--AS
+--BEGIN
+--    SET NOCOUNT ON;
+    
+--    SELECT 
+--        d.numero_documento,
+--        d.fecha_emision,
+--        d.fecha_vencimiento,
+--        tdc.nombre AS tipo_documento,
+--        h.nombres + ' ' + h.apellidos AS huesped,
+--        d.monto_total,
+--        d.monto_pagado,
+--        d.saldo_pendiente,
+--        ed.nombre AS estado,
+--        DATEDIFF(DAY, GETDATE(), d.fecha_vencimiento) AS dias_vencimiento
+--    FROM Documento d
+--    INNER JOIN TipoDocumentoCobro tdc ON d.tipo_documento = tdc.id_tipo_doc_cobro
+--    INNER JOIN EstadoDocumento ed ON d.estado_documento = ed.id_estado_documento
+--    LEFT JOIN Reserva r ON d.id_reserva = r.id_reserva
+--    LEFT JOIN OrdenHospedaje oh ON d.id_orden_hospedaje = oh.id_orden_hospedaje
+--    LEFT JOIN Reserva r2 ON oh.id_reserva = r2.id_reserva
+--    LEFT JOIN Huesped h ON COALESCE(r.id_huesped, r2.id_huesped) = h.id_huesped
+--    WHERE d.estado_documento IN (
+--        SELECT id_estado_documento 
+--        FROM EstadoDocumento 
+--        WHERE nombre IN ('Pendiente', 'Pagado Parcial', 'Vencido')
+--    )
+--    ORDER BY d.fecha_vencimiento ASC;
+--END;
+--GO

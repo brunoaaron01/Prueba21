@@ -1,2 +1,5 @@
 # Proyecto para Curso de Mantenimiento de Software
-Readme inicial, ajustar
+Arquitectura: MVC
+Tipo: Web
+Tecnologías: C#, ASP.NET Core, Entity Framework Core, SQL Server, HTML, CSS, js
+Descripción: software para gestión interna de Hostal Las Mercedes
