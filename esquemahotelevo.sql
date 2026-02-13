@@ -170,13 +170,18 @@ CREATE TABLE [Pago] (
 
 CREATE TABLE [Encuesta] (
   [id_encuesta] INT PRIMARY KEY IDENTITY(1,1),
-  [id_huesped] INT NOT NULL REFERENCES Huesped(id_huesped),
+  [id_orden_hospedaje] INT NOT NULL REFERENCES OrdenHospedaje(id_orden_hospedaje),
   [descripcion] NVARCHAR(500),
   [recomendacion] INT NOT NULL CHECK(recomendacion BETWEEN 1 AND 10),
   [lugar_origen] NVARCHAR(100),
   [motivo_viaje] NVARCHAR(100),
-  [tiempo_estadia] NVARCHAR(50),
-  [fecha_encuesta] DATETIME2 DEFAULT SYSUTCDATETIME()
+  [calificacion_limpieza] INT CHECK(calificacion_limpieza BETWEEN 1 AND 5),
+  [calificacion_servicio] INT CHECK(calificacion_servicio BETWEEN 1 AND 5),
+  [calificacion_ubicacion] INT CHECK(calificacion_ubicacion BETWEEN 1 AND 5),
+  [calificacion_precio] INT CHECK(calificacion_precio BETWEEN 1 AND 5),
+  [comentarios] NVARCHAR(1000),
+  [fecha_encuesta] DATETIME2 DEFAULT SYSUTCDATETIME(),
+  CONSTRAINT UQ_Encuesta_OrdenHospedaje UNIQUE(id_orden_hospedaje)
 );
 
 -- ==============================
@@ -190,4 +195,4 @@ CREATE INDEX IX_OrdenHospedaje_Reserva ON OrdenHospedaje(id_reserva);
 CREATE INDEX IX_OrdenConserjeria_Habitacion ON OrdenConserjeria(id_habitacion);
 CREATE INDEX IX_OrdenConserjeria_Reserva ON OrdenConserjeria(id_reserva);
 CREATE INDEX IX_Pago_Fecha ON Pago(fecha_pago);
-CREATE INDEX IX_Encuesta_Huesped ON Encuesta(id_huesped);
+CREATE INDEX IX_Encuesta_OrdenHospedaje ON Encuesta(id_orden_hospedaje);
