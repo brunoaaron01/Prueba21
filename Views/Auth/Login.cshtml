@@ -125,7 +125,6 @@
                 transform: scale(1.1);
             }
 
-        /* Estilos para el modal de privacidad */
         .modal-content {
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -177,7 +176,6 @@
         [data-bs-theme="dark"] .modal-body h4 {
             color: #6ea8fe;
         }
-        <!-- Añade estos estilos -->
 
         .attempts-counter {
             background-color: #fff3cd;
@@ -190,20 +188,26 @@
             font-weight: 500;
             animation: pulse 2s infinite;
         }
-    
+
         @@keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+            }
         }
-    
+
         [data-bs-theme="dark"] .attempts-counter {
             background-color: #332701;
             color: #ffeeba;
         }
 
-
-        /* Nuevos estilos para las funcionalidades añadidas */
         .language-selector {
             position: fixed;
             top: 1rem;
@@ -268,20 +272,16 @@
                 outline: none;
             }
 
-        /* Animaciones */
         @@keyframes fadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-container {
@@ -291,7 +291,6 @@
 </head>
 <body>
 
-    <!-- Selector de idioma -->
     <div class="language-selector">
         <select id="languageSelector" class="form-select">
             <option value="es" selected>Español</option>
@@ -303,13 +302,11 @@
         <i id="themeIcon" class="fas fa-moon"></i>
     </button>
 
-    <!-- Contenedor de Login -->
     <div class="login-container">
         <i class="fas fa-hotel icon"></i>
         <div class="brand" id="brandText">Hostal Mercedes</div>
         <h2 id="loginTitle">Iniciar Sesión</h2>
 
-        <!-- Mensajes de error -->
         <div id="errorContainer">
             @if (TempData["ErrorMessage"] != null)
             {
@@ -319,11 +316,12 @@
             }
         </div>
         <div class="countdown-message" id="countdownMessage" style="display:none;"></div>
-        <!-- CONTADOR DE INTENTOS - NUEVA SECCIÓN -->
+
         <div class="attempts-counter" id="attemptsCounter" style="display: none;">
             <i class="fas fa-exclamation-triangle me-2"></i>
             <span id="attemptsText"></span>
         </div>
+
         <form asp-action="Login" method="post" id="loginForm">
             <div class="mb-3 input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
@@ -331,8 +329,6 @@
                        id="emailInput" placeholder="Correo Electrónico" />
             </div>
 
-
-            <!-- Campo de contraseña con botón para mostrar/ocultar -->
             <div class="mb-3 input-group password-input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 <input type="password" name="contrasenia" class="form-control" required
@@ -341,9 +337,10 @@
                     <i class="fas fa-eye"></i>
                 </button>
             </div>
+
             <div class="remember-password">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="rememberPassword">
+                    <input class="form-check-input" type="checkbox" name="rememberPassword" id="rememberPassword">
                     <label class="form-check-label" for="rememberPassword" id="rememberLabel">
                         Recordar contraseña
                     </label>
@@ -360,7 +357,6 @@
         </div>
     </div>
 
-    <!-- Modal de Política de Privacidad -->
     <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -438,11 +434,9 @@
         </div>
     </div>
 
-    <!-- Script de Bootstrap -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Objeto con todas las traducciones
         const translations = {
             es: {
                 brand: "Hostal Mercedes",
@@ -482,12 +476,9 @@
             }
         };
 
-        // Función para cambiar el idioma
         function changeLanguage(lang) {
-            // Guardar el idioma en localStorage
             localStorage.setItem('language', lang);
 
-            // Aplicar traducciones a los elementos
             document.getElementById('brandText').textContent = translations[lang].brand;
             document.getElementById('loginTitle').textContent = translations[lang].loginTitle;
             document.getElementById('emailInput').placeholder = translations[lang].emailPlaceholder;
@@ -498,7 +489,6 @@
             document.getElementById('acceptButton').textContent = translations[lang].acceptButton;
             document.getElementById('privacyModalTitle').textContent = translations[lang].privacyLink;
 
-            // Cambiar contenido del modal de privacidad
             if (lang === 'es') {
                 document.getElementById('privacyContentEs').style.display = 'block';
                 document.getElementById('privacyContentEn').style.display = 'none';
@@ -507,7 +497,6 @@
                 document.getElementById('privacyContentEn').style.display = 'block';
             }
 
-            // Actualizar mensajes de error si existen
             const errorMessage = document.getElementById('errorMessage');
             if (errorMessage) {
                 const originalText = errorMessage.textContent;
@@ -522,7 +511,7 @@
                     errorMessage.textContent = translations[lang].wrongPassword;
                 }
             }
-                // ACTUALIZAR MENSAJE DE INTENTOS (NUEVA SECCIÓN)
+
             const attemptsCounter = document.getElementById('attemptsCounter');
             const attemptsText = document.getElementById('attemptsText');
             const remainingAttempts = @(TempData["RemainingAttempts"] != null ? TempData["RemainingAttempts"] : -1);
@@ -539,7 +528,6 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Manejo del tema
             const themeToggle = document.getElementById("themeToggle");
             const themeIcon = document.getElementById("themeIcon");
             const html = document.documentElement;
@@ -560,53 +548,42 @@
                 themeIcon.className = newTheme === "dark" ? "fas fa-sun" : "fas fa-moon";
             });
 
-
-            // Selector de idioma
             const languageSelector = document.getElementById('languageSelector');
             const savedLanguage = localStorage.getItem('language') || 'es';
 
-            // Aplicar idioma guardado
             changeLanguage(savedLanguage);
             languageSelector.value = savedLanguage;
 
-            // Evento para cambiar idioma
             languageSelector.addEventListener('change', function() {
                 const lang = this.value;
                 changeLanguage(lang);
             });
 
-        // Función para mostrar/ocultar contraseña - SOLUCIÓN CORREGIDA
-                   document.getElementById('togglePassword').addEventListener('click', function() {
-                       const passwordInput = document.getElementById('passwordInput');
-                       const icon = this.querySelector('i');
+            document.getElementById('togglePassword').addEventListener('click', function() {
+                const passwordInput = document.getElementById('passwordInput');
+                const icon = this.querySelector('i');
 
-                       if (passwordInput.type === 'password') {
-                           // Mostrar contraseña
-                           passwordInput.type = 'text';
-                           icon.classList.replace('fa-eye', 'fa-eye-slash');
-                           this.setAttribute('title', 'Ocultar contraseña');
-                       } else {
-                           // Ocultar contraseña
-                           passwordInput.type = 'password';
-                           icon.classList.replace('fa-eye-slash', 'fa-eye');
-                           this.setAttribute('title', 'Mostrar contraseña');
-                       }
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                    this.setAttribute('title', 'Ocultar contraseña');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                    this.setAttribute('title', 'Mostrar contraseña');
+                }
 
-                       // Actualizar tooltip
-                       if (bootstrap.Tooltip.getInstance(this)) {
-                           bootstrap.Tooltip.getInstance(this).dispose();
-                           new bootstrap.Tooltip(this);
-                       }
-                   });
+                if (bootstrap.Tooltip.getInstance(this)) {
+                    bootstrap.Tooltip.getInstance(this).dispose();
+                    new bootstrap.Tooltip(this);
+                }
+            });
 
-
-            // Elementos del formulario
             const rememberCheckbox = document.getElementById('rememberPassword');
             const emailInput = document.getElementById('emailInput');
             const passwordInput = document.getElementById('passwordInput');
             const loginForm = document.getElementById('loginForm');
 
-            // Cargar credenciales guardadas
             const loadSavedCredentials = () => {
                 const rememberedEmail = localStorage.getItem('rememberedEmail');
                 const rememberedPassword = localStorage.getItem('rememberedPassword');
@@ -618,7 +595,6 @@
                 }
             };
 
-            // Guardar credenciales
             const saveCredentials = () => {
                 if (rememberCheckbox.checked) {
                     localStorage.setItem('rememberedEmail', emailInput.value);
@@ -629,13 +605,11 @@
                 }
             };
 
-            // Inicializar
             loadSavedCredentials();
 
-            // Event listeners
             rememberCheckbox.addEventListener('change', saveCredentials);
             loginForm.addEventListener('submit', saveCredentials);
-                    // INICIO NUEVO CÓDIGO PARA INTENTOS RESTANTES
+
             const remainingAttempts = @(TempData["RemainingAttempts"] != null ? TempData["RemainingAttempts"] : -1);
             const attemptsCounter = document.getElementById('attemptsCounter');
             const attemptsText = document.getElementById('attemptsText');
@@ -653,70 +627,58 @@
                 }
             }
 
-                  // Temporizador para bloqueo por intentos fallidos
-        function checkBlockedStatus() {
-            const errorMessage = document.getElementById('errorMessage');
-            const countdownMessage = document.getElementById('countdownMessage');
-            const loginButton = document.getElementById('loginButton');
-            const loginForm = document.getElementById('loginForm');
-            const currentLang = localStorage.getItem('language') || 'es';
+            function checkBlockedStatus() {
+                const errorMessage = document.getElementById('errorMessage');
+                const countdownMessage = document.getElementById('countdownMessage');
+                const loginButton = document.getElementById('loginButton');
+                const loginForm = document.getElementById('loginForm');
+                const currentLang = localStorage.getItem('language') || 'es';
 
-            // Obtener estado de bloqueo del servidor
-            const isBlocked = @(TempData["IsBlocked"] != null ? "true" : "false");
-            let seconds = @(TempData["BlockSeconds"] != null ? TempData["BlockSeconds"] : 0);
+                const isBlocked = @(TempData["IsBlocked"] != null ? "true" : "false");
+                let seconds = @(TempData["BlockSeconds"] != null ? TempData["BlockSeconds"] : 0);
 
-            // Si ya hay un intervalo activo, limpiarlo
-            if (window.countdownInterval) {
-                clearInterval(window.countdownInterval);
-            }
-
-            // Verificar si hay un bloqueo activo
-            if (isBlocked || (errorMessage && (errorMessage.textContent.includes("bloqueada") ||
-                                              errorMessage.textContent.includes("blocked")))) {
-                // Usar el tiempo del servidor si está disponible
-                if (seconds <= 0) {
-                    // Intentar extraer segundos del mensaje de error
-                    const secondsMatch = errorMessage ? errorMessage.textContent.match(/\d+/) : null;
-                    seconds = secondsMatch ? parseInt(secondsMatch[0]) : 30;
+                if (window.countdownInterval) {
+                    clearInterval(window.countdownInterval);
                 }
 
-                countdownMessage.style.display = 'block';
-                loginButton.disabled = true;
-
-                // Deshabilitar todos los campos del formulario
-                const formElements = loginForm.elements;
-                for (let i = 0; i < formElements.length; i++) {
-                    formElements[i].disabled = true;
-                }
-
-                // Actualizar mensaje inicial
-                countdownMessage.textContent =
-                    translations[currentLang].blockedMessage.replace("{seconds}", seconds);
-
-                // Iniciar contador regresivo
-                window.countdownInterval = setInterval(() => {
-                    seconds--;
-
+                if (isBlocked || (errorMessage && (errorMessage.textContent.includes("bloqueada") ||
+                                                  errorMessage.textContent.includes("blocked")))) {
                     if (seconds <= 0) {
-                        clearInterval(window.countdownInterval);
-                        countdownMessage.style.display = 'none';
-                        loginButton.disabled = false;
-
-                        // Habilitar todos los campos del formulario
-                        for (let i = 0; i < formElements.length; i++) {
-                            formElements[i].disabled = false;
-                        }
-
-                        // Recargar la página para obtener nuevo estado del servidor
-                        location.reload();
-                    } else {
-                        // Actualizar mensaje
-                        countdownMessage.textContent =
-                            translations[currentLang].blockedMessage.replace("{seconds}", seconds);
+                        const secondsMatch = errorMessage ? errorMessage.textContent.match(/\d+/) : null;
+                        seconds = secondsMatch ? parseInt(secondsMatch[0]) : 30;
                     }
-                }, 1000);
+
+                    countdownMessage.style.display = 'block';
+                    loginButton.disabled = true;
+
+                    const formElements = loginForm.elements;
+                    for (let i = 0; i < formElements.length; i++) {
+                        formElements[i].disabled = true;
+                    }
+
+                    countdownMessage.textContent =
+                        translations[currentLang].blockedMessage.replace("{seconds}", seconds);
+
+                    window.countdownInterval = setInterval(() => {
+                        seconds--;
+
+                        if (seconds <= 0) {
+                            clearInterval(window.countdownInterval);
+                            countdownMessage.style.display = 'none';
+                            loginButton.disabled = false;
+
+                            for (let i = 0; i < formElements.length; i++) {
+                                formElements[i].disabled = false;
+                            }
+
+                            location.reload();
+                        } else {
+                            countdownMessage.textContent =
+                                translations[currentLang].blockedMessage.replace("{seconds}", seconds);
+                        }
+                    }, 1000);
+                }
             }
-        }
 
             checkBlockedStatus();
         });
