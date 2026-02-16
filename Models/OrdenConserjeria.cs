@@ -1,40 +1,59 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Prueba21.Models
 {
     public class OrdenConserjeria
     {
         [Key]
-        public int OrdenConserjeriaId { get; set; }
-
-        [Required(ErrorMessage = "La habitación es obligatoria.")]
-        public int HabitacionId { get; set; }
+        [Column("id_orden_conserj")]
+        public int IdOrdenConserj { get; set; }
 
         [Required(ErrorMessage = "El personal es obligatorio.")]
-        public int PersonalId { get; set; }
+        [Column("id_personal")]
+        public int IdPersonal { get; set; }
+
+        [Required(ErrorMessage = "La habitación es obligatoria.")]
+        [Column("id_habitacion")]
+        public int IdHabitacion { get; set; }
+
+        [Column("id_reserva")]
+        public int? IdReserva { get; set; }
 
         [Required(ErrorMessage = "La fecha de inicio es obligatoria.")]
-        [DataType(DataType.DateTime)]
-        public DateTime FechaInicio { get; set; } = DateTime.Now;
+        [Column("fecha_inicio")]
+        public DateTime FechaInicio { get; set; }
 
-
-        [Required(ErrorMessage = "La fecha de fin es obligatoria.")]
-        [DataType(DataType.DateTime)]
+        [Column("fecha_fin")]
         public DateTime? FechaFin { get; set; }
 
-        [Required(ErrorMessage = "La descripción es obligatoria.")]
+        [Required(ErrorMessage = "El precio es obligatorio.")]
+        [Range(0, double.MaxValue, ErrorMessage = "El precio debe ser mayor o igual a 0.")]
+        [Column("precio", TypeName = "decimal(12,2)")]
+        public decimal Precio { get; set; }
+
+        [Required(ErrorMessage = "El estado es obligatorio.")]
+        [Column("estado")]
+        public int Estado { get; set; }
+
         [StringLength(500, ErrorMessage = "Máximo 500 caracteres.")]
-        public string Descripcion { get; set; }
+        [Column("descripcion")]
+        public string? Descripcion { get; set; }
 
-        // ✅ Agregar propiedad Estado
-        [Required]
-        public string Estado { get; set; } = "En Proceso"; 
+        // Relaciones (Foreign Keys)
+        [ForeignKey("IdPersonal")]
+        public virtual Personal Personal { get; set; }
 
-        [ForeignKey("HabitacionId")]
-        public  Habitacion? Habitacion { get; set; }
+        [ForeignKey("IdHabitacion")]
+        public virtual Habitacion Habitacion { get; set; }
 
-        [ForeignKey("PersonalId")]
-        public  Personal? Personal { get; set; }
+        [ForeignKey("IdReserva")]
+        public virtual Reserva? Reserva { get; set; }
+
+        [ForeignKey("Estado")]
+        public virtual EstadoOrdenConserjeria EstadoOrdenConserjeria { get; set; }
+
+        // Relaciones (Colecciones)
+        public virtual ICollection<Documento> Documentos { get; set; } = new List<Documento>();
     }
 }

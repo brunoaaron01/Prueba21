@@ -3,16 +3,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Prueba21.Models
 {
-    public class Personal
+    public class Huesped
     {
         [Key]
-        [Column("id_personal")]
-        public int IdPersonal { get; set; }
+        [Column("id_huesped")]
+        public int IdHuesped { get; set; }
 
-        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [Required(ErrorMessage = "Los nombres son obligatorios.")]
         [StringLength(100, ErrorMessage = "Máximo 100 caracteres.")]
-        [Column("nombre")]
-        public string Nombre { get; set; }
+        [Column("nombres")]
+        public string Nombres { get; set; }
+
+        [Required(ErrorMessage = "Los apellidos son obligatorios.")]
+        [StringLength(100, ErrorMessage = "Máximo 100 caracteres.")]
+        [Column("apellidos")]
+        public string Apellidos { get; set; }
 
         [Required(ErrorMessage = "El tipo de documento es obligatorio.")]
         [Column("tipo_documento")]
@@ -23,21 +28,15 @@ namespace Prueba21.Models
         [Column("num_documento")]
         public string NumDocumento { get; set; }
 
+        [StringLength(20, ErrorMessage = "Máximo 20 caracteres.")]
+        [Phone(ErrorMessage = "Formato de teléfono inválido.")]
+        [Column("telefono")]
+        public string? Telefono { get; set; }
+
         [EmailAddress(ErrorMessage = "Formato de correo inválido.")]
         [StringLength(255, ErrorMessage = "Máximo 255 caracteres.")]
-        [Column("email")]
-        public string? Email { get; set; }
-
-        [Required(ErrorMessage = "La contraseña es obligatoria.")]
-        [Column("password_hash")]
-        public byte[] PasswordHash { get; set; }
-
-        [Required(ErrorMessage = "El rol es obligatorio.")]
-        [Column("id_rol")]
-        public int IdRol { get; set; }
-
-        [Column("activo")]
-        public bool Activo { get; set; } = true;
+        [Column("correo")]
+        public string? Correo { get; set; }
 
         [Column("fecha_creacion")]
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
@@ -46,11 +45,7 @@ namespace Prueba21.Models
         [ForeignKey("TipoDocumento")]
         public virtual TipoDocumento TipoDocumentoNavigation { get; set; }
 
-        [ForeignKey("IdRol")]
-        public virtual Rol RolNavigation { get; set; }
-
         // Relaciones (Colecciones)
-        public virtual ICollection<OrdenConserjeria> OrdenesConserjeria { get; set; } = new List<OrdenConserjeria>();
-        public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
+        public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
     }
 }
