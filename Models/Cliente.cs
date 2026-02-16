@@ -26,6 +26,6 @@ namespace Prueba21.Models
         public ICollection<OrdenReserva> OrdenReserva { get; set; } = new List<OrdenReserva>();// 1:1 (Si hace reserva) 
         public ICollection<OrdenHospedaje> OrdenesHospedaje { get; set; } = new List<OrdenHospedaje>(); // 1:N (Si se hospeda)
 
-
+        //comentario de prueba
     }
 }
