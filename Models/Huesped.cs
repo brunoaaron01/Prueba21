@@ -47,5 +47,5 @@ namespace Prueba21.Models
 
         // Relaciones (Colecciones)
         public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
-    }
+    }//comentario de prueba
 }
