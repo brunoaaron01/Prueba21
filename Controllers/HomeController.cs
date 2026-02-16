@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Prueba21.Models;
@@ -20,14 +20,14 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+    //public IActionResult Privacy()
+    //{
+    //    return View();
+    //}
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    //public IActionResult Error()
+    //{
+    //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    //}
 }
