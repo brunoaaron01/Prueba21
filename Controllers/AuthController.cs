@@ -48,8 +48,9 @@ namespace Prueba21.Controllers
                     attempts = 0;
                 }
             }
+
             // Validar usuario solo si no hay bloqueo activo
-            var (usuario, error) = await _authService.ValidarUsuario(email, contrasenia);
+            var (personal, error) = await _authService.ValidarUsuario(email, contrasenia);
 
             if (error != null)
             {
@@ -102,13 +103,15 @@ namespace Prueba21.Controllers
                 TempData["RememberPassword"] = true;
             }
 
-            // Resto del código de autenticación...
+            // Crear claims con los datos del personal autenticado
             var claims = new List<Claim>
-             {
-                     new Claim(ClaimTypes.Name, usuario.Nombre),
-                     new Claim(ClaimTypes.Email, usuario.Email),
-                     new Claim(ClaimTypes.Role, usuario.Rol)
-             };          
+            {
+                new Claim(ClaimTypes.NameIdentifier, personal.IdPersonal.ToString()),
+                new Claim(ClaimTypes.Name, personal.Nombre),
+                new Claim(ClaimTypes.Email, personal.Email ?? string.Empty),
+                new Claim(ClaimTypes.Role, personal.RolNavigation.Nombre),
+                new Claim("RolId", personal.IdRol.ToString())
+            };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
@@ -124,6 +127,7 @@ namespace Prueba21.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
         [Authorize]
         public async Task<IActionResult> Logout()
         {

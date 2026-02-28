@@ -19,13 +19,13 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IClienteService, ClienteService>();
-builder.Services.AddScoped<IFormaDePagoService, FormaDePagoService>();
-builder.Services.AddScoped<IHabitacionService, HabitacionService>();
-builder.Services.AddScoped<IOrdenConserjeriaService, OrdenConserjeriaService>();
-builder.Services.AddScoped<IOrdenHospedajeService, OrdenHospedajeService>();
-builder.Services.AddScoped<IOrdenReservaService, OrdenReservaService>();
-builder.Services.AddScoped<IPersonalService, PersonalService>();
+//builder.Services.AddScoped<IClienteService, ClienteService>();
+//builder.Services.AddScoped<IFormaDePagoService, FormaDePagoService>();
+//builder.Services.AddScoped<IHabitacionService, HabitacionService>();
+//builder.Services.AddScoped<IOrdenConserjeriaService, OrdenConserjeriaService>();
+//builder.Services.AddScoped<IOrdenHospedajeService, OrdenHospedajeService>();
+//builder.Services.AddScoped<IOrdenReservaService, OrdenReservaService>();
+//builder.Services.AddScoped<IPersonalService, PersonalService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
